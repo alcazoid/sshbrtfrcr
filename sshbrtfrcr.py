@@ -3,6 +3,7 @@ import paramiko
 import itertools
 from Queue import Queue
 from threading import Thread
+from time import sleep
 
 
 parser = argparse.ArgumentParser(description='Bruteforce ssh by list of passwords and usernames',
@@ -31,6 +32,7 @@ def worker(queue):
                 print host, args.port, user, pwd
                 break
             except:
+                sleep(args.i)
                 next
 
         queue.task_done()
