@@ -30,7 +30,6 @@ def worker(queue):
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 ssh.connect(host, port=args.port, username=user, password=pwd)
                 print host, args.port, user, pwd
-                break
             except:
                 sleep(args.i)
                 next
