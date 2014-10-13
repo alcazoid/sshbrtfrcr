@@ -58,7 +58,7 @@ def main():
     combos = [combo for combo in itertools.product(users, passwords)]
 
     # go threads
-    if len(combos) < args.threadnum:
+    if args.threadnum > len(combos):
         args.threadnum = len(combos)
 
     for i in range(args.threadnum):
