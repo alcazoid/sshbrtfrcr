@@ -13,7 +13,7 @@ parser.add_argument('-p', type=int, default=22, help='port to connect to(default
 parser.add_argument('--usernames', default="srnms", type=argparse.FileType("r"), help='file with usernames(default: srnms)')
 parser.add_argument('--passwords', default="pswds", type=argparse.FileType("r"), help='file with passwords(default: pswds)')
 parser.add_argument('--hosts', default="hsts", type=argparse.FileType("r"), help='file with hosts to connect to(default: hsts)')
-parser.add_argument('--threadnum', type=4, default="4", help='number of threads(default: 4)')
+parser.add_argument('--threadnum', type=int, default="4", help='number of threads(default: 4)')
 
 args = parser.parse_args()
 users = []
