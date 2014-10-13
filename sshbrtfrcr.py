@@ -10,10 +10,10 @@ THREADNUM = 4
 
 parser = argparse.ArgumentParser(description='Bruteforce ssh by list of passwords and usernames')
 parser.add_argument('-i', type=int, default=30, help='interval between connections(default: 30 sec)')
-parser.add_argument('-p', type=int, default=22, help='port to connect to(default: 22')
+parser.add_argument('-p', type=int, default=22, help='port to connect to(default: 22)')
 parser.add_argument('--usernames', default="srnms", type=argparse.FileType("r"), help='file with usernames(default: srnms)')
 parser.add_argument('--passwords', default="pswds", type=argparse.FileType("r"), help='file with passwords(default: pswds)')
-parser.add_argument('--hosts', default="hsts", type=argparse.FileType("r"), help='file with hosts to connect to(default: pswds)')
+parser.add_argument('--hosts', default="hsts", type=argparse.FileType("r"), help='file with hosts to connect to(default: hsts)')
 
 args = parser.parse_args()
 users = []
