@@ -56,15 +56,17 @@ def main():
         passwords.append(pwdline.strip())
 
     # put all combinations of usernames and passwords to queue
-    for combo in itertools.product(users, passwords):
+    combos = [combo for combo in itertools.product(users, passwords)]
+    queue_size = len(combos)
+    for combo in combos:
         queue.put(combo)
 
     # free some memory in case lists are big
-    del users, passwords
+    del users, passwords, combos
 
     # go threads
-    if args.threadnum > len(queue):
-        args.threadnum = len(queue)
+    if args.threadnum > queue_size:
+        args.threadnum = queue_size
 
     for i in range(args.threadnum):
         t = Thread(target=worker, args=(queue,))
