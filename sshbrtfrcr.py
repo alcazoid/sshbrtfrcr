@@ -28,8 +28,8 @@ def worker(queue):
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                ssh.connect(host, port=args.port, username=user, password=pwd)
-                print host, args.port, user, pwd
+                ssh.connect(host, port=args.p, username=user, password=pwd)
+                print host, args.p, user, pwd
             except:
                 sleep(args.i)
                 next
