@@ -43,9 +43,21 @@ def main():
     # create Queue(thread-safe)
     queue = Queue()
 
+    def is_normal_host(host):
+        res = False
+        try:
+            ssh = paramiko.SSHClient()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(host, port=args.p, username="anus", password="zapekanus")
+        except:
+            res = True
+        return res
+
     # read hosts to thread-safe queue
     for hostline in args.hosts:
-        hosts.append(hostline.strip())
+        hostline.strip()
+        if is_normal_host(hostline):
+            hosts.append(hostline)
 
     # read all usernames
     for usrline in args.usernames:
